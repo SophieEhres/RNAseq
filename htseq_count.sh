@@ -31,7 +31,7 @@ echo "#!/bin/bash
 module load scipy-stack
 
 htseq-count -f BAM \
--s reverse -m union \
+-s yes -m union \
 ${cleandir}/${file} ${gtf} > ${countdir}/${name}_countMatrix.txt
 
 
