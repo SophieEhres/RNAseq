@@ -18,5 +18,4 @@ STAR --runMode genomeGenerate \
 --genomeDir ${index} \
 --runThreadN 20 \
 --genomeFastaFiles ${fastafile} \
---limitGenomeGenerateRAM 15000 \
 
