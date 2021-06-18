@@ -14,22 +14,22 @@ mkdir -p ${logdir}
 
 names=$(ls ${trimdir} | grep -v "unpaired" | rev | cut -d "_" -f3- | rev | uniq)
 
-gawk '$6==1 || ($6==0 && ($7>2))' ${alignfirstdir}/*SJ.out.tab > ${alignfirstdir}/ALL_SJ.filt.tab
-
+if [ -f ${alignfirstdir}/ALL_SJ.filt.tab ] ; then
+    echo "splice junctions already merged, moving to second pass alignment"
+else
+    gawk '$6==1 || ($6==0 && ($7>2))' ${alignfirstdir}/*SJ.out.tab > ${alignfirstdir}/ALL_SJ.filt.tab
+fi
 
 for name in ${names}; do
 
 files=$(ls ${trimdir}/*.gz | grep -v "unpaired" | grep -e "${name}" | tr '\n' ' ')
 logfile="star_alignfirst_${name}.log"
 
-if [ -f ${alignseconddir}/alignmentsecondpass_${name}_*.bam ] ; then
-    
-    echo "${name} already aligned"
-    
-elif [ -d ${aligseconddir}/alignmentsecondpass_${name}*tmp ] ; then
+echo -e "${name}"
+if [ -d ${alignseconddir}/alignmentsecondpass_${name}*_STARtmp ] ; then
     echo "restarting ${name} job"
     ls -d ${alignseconddir}/* | grep -e "${name}" | xargs rm -rf
-
+    
 echo "#!/bin/bash
 #SBATCH --time=6:00:00
 #SBATCH --mail-user=${JOB_MAIL}
@@ -37,8 +37,7 @@ echo "#!/bin/bash
 #SBATCH --account=def-sauvagm
 #SBATCH --job-name=staralign_secondpass_${name}
 #SBATCH --ntasks=12
-#SBATCH --output=staralign_secondpass.out
-#SBATCH --mem-per-cpu=40G
+#SBATCH --mem-per-cpu=60G
 #SBATCH --output=${logdir}/${logfile}
 
 now=$(date +"%Y-%m-%d-%H-%M")
@@ -49,14 +48,18 @@ STAR --runMode alignReads \
 --runThreadN 12 \
 --readFilesIn ${files} \
 --outSAMtype BAM SortedByCoordinate \
---outFileNamePrefix ${alignseconddir}/alignmentsecondpass_${name}_ \
+--outFileNamePrefix ${alignseconddir}/alignmentsecondpass_${name} \
 --readFilesCommand zcat \
 --sjdbFileChrStartEnd ${alignfirstdir}/ALL_SJ.filt.tab \
 --outSAMattrRGline ID:"${name}"	PL:"ILLUMINA" CN:"IRCM" 2>> ${logdir}/${logfile}
 " > ${jobdir}/${name}_alignsecond.sh
 
     echo "submitting align job for ${name}"
-    sbatch ${jobdir}/${file}
+    sbatch ${jobdir}/${name}_alignsecond.sh
+
+elif [ -f ${alignseconddir}/alignmentsecondpass_${name}_*.bam ] ; then
+    
+    echo "${name} already aligned"
 
 else
 
@@ -67,7 +70,6 @@ echo "#!/bin/bash
 #SBATCH --account=def-sauvagm
 #SBATCH --job-name=staralign_secondpass_${name}
 #SBATCH --ntasks=12
-#SBATCH --output=staralign_secondpass.out
 #SBATCH --mem-per-cpu=40G
 #SBATCH --output=${logdir}/${logfile}
 
@@ -79,7 +81,7 @@ STAR --runMode alignReads \
 --runThreadN 12 \
 --readFilesIn ${files} \
 --outSAMtype BAM SortedByCoordinate \
---outFileNamePrefix ${alignseconddir}/alignmentsecondpass_${name}_ \
+--outFileNamePrefix ${alignseconddir}/alignmentsecondpass_${name} \
 --readFilesCommand zcat \
 --sjdbFileChrStartEnd ${alignfirstdir}/ALL_SJ.filt.tab \
 --outSAMattrRGline ID:"${name}"	PL:"ILLUMINA" CN:"IRCM" 2>> ${logdir}/${logfile}
@@ -87,7 +89,7 @@ STAR --runMode alignReads \
 
 
 echo "submitting align job for ${name}"
-    sbatch ${jobdir}/${file}
+    sbatch ${jobdir}/${name}_alignsecond.sh
 
 
 fi
