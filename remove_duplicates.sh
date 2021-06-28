@@ -55,7 +55,7 @@ java -Xmx20G -jar /cvmfs/soft.computecanada.ca/easybuild/software/2020/Core/pica
 
 fi
 
-samtools view -m 10G -@ 10 -F 1804 -b -h ${markdupdir}/${name}_markdup.bam > ${cleandir}/${name}_clean.bam
+samtools view -m 10G -@ 20 -F 1804 -b -h ${markdupdir}/${name}_markdup.bam > ${cleandir}/${name}_clean.bam
 
 
 " > ${jobdir}/${name}_dup.sh
