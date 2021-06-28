@@ -19,7 +19,7 @@ for file in $(ls ${cleandir}/*_clean.bam | xargs -n 1 basename); do
     else
 
 echo "#!/bin/bash
-#SBATCH --time=1:00:00
+#SBATCH --time=3:00:00
 #SBATCH --job-name=countmatrix_${name}
 #SBATCH --output=${logdir}/${name}_count.log
 #SBATCH --ntasks=10
