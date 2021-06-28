@@ -48,7 +48,7 @@ STAR --runMode alignReads \
 --runThreadN 12 \
 --readFilesIn ${files} \
 --outSAMtype BAM SortedByCoordinate \
---outFileNamePrefix ${alignseconddir}/alignmentsecondpass_${name} \
+--outFileNamePrefix ${alignseconddir}/alignmentsecondpass_${name}_ \
 --readFilesCommand zcat \
 --sjdbFileChrStartEnd ${alignfirstdir}/ALL_SJ.filt.tab \
 --outSAMattrRGline ID:"${name}"	PL:"ILLUMINA" CN:"IRCM" 2>> ${logdir}/${logfile}
@@ -70,7 +70,7 @@ echo "#!/bin/bash
 #SBATCH --account=def-sauvagm
 #SBATCH --job-name=staralign_secondpass_${name}
 #SBATCH --ntasks=12
-#SBATCH --mem-per-cpu=40G
+#SBATCH --mem-per-cpu=60G
 #SBATCH --output=${logdir}/${logfile}
 
 now=$(date +"%Y-%m-%d-%H-%M")
@@ -81,10 +81,10 @@ STAR --runMode alignReads \
 --runThreadN 12 \
 --readFilesIn ${files} \
 --outSAMtype BAM SortedByCoordinate \
---outFileNamePrefix ${alignseconddir}/alignmentsecondpass_${name} \
+--outFileNamePrefix ${alignseconddir}/alignmentsecondpass_${name}_ \
 --readFilesCommand zcat \
 --sjdbFileChrStartEnd ${alignfirstdir}/ALL_SJ.filt.tab \
---outSAMattrRGline ID:"${name}"	PL:"ILLUMINA" CN:"IRCM" 2>> ${logdir}/${logfile}
+--outSAMattrRGline ID:"${name}"	PL:"ILLUMINA" CN:"IRCM" SM:"${name}" LB:"KAPA_HMR" 2>> ${logdir}/${logfile}
 " > ${jobdir}/${name}_alignsecond.sh
 
 
