@@ -11,12 +11,14 @@ mkdir -p ${trim_dir}
 mkdir -p ${trim_job}
 
 samples=$(ls ${fastq_dir}/*.gz | rev | cut -d "/" -f1 | cut -d "_" -f2- | cut -d "-" -f1 | rev | uniq )
-echo "samples are $samples"
 
 for sample in ${samples}; do 
 
     files="$(ls ${fastq_dir}/*.gz | grep -e ${sample} | tr '\n' ' ')"
-    #echo "files are ${files}" 
+    #echo "files are ${files}"
+    if [ -f ${trim_dir}/${sample}_forward_paired.fq.gz ]; then
+        echo "${sample} already trimmed"
+    else
     
     echo "#!/bin/bash
 #SBATCH --time=05:00:00
@@ -34,5 +36,7 @@ ${trim_dir}/${sample}_reverse_paired.fq.gz ${trim_dir}/${sample}_reverse_unpaire
 ILLUMINACLIP:${adapters}/IlluminaNextera_PE.fa:2:30:10
 "> ${trim_job}/${sample}_trimjob.sh 
 sbatch --account=def-sauvagm ${trim_job}/${sample}_trimjob.sh 
+
+    fi
 
 done
