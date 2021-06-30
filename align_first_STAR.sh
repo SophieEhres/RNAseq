@@ -15,6 +15,9 @@ names=$(ls ${trimdir} | grep -v "unpaired" | rev | cut -d "_" -f3- | rev | uniq)
 
 
 for name in ${names}; do
+    if [ -f ${alignfirstdir}/alignmentfirstpass_${name}_Aligned.out.bam ]; then
+        echo "${name} already aligned"
+    else
 
 files=$(ls ${trimdir}/*.gz | grep -v "unpaired" | grep -e "${name}" | tr '\n' ' ')
 logfile="star_alignfirst_${name}.log"
@@ -43,10 +46,8 @@ STAR --runMode alignReads \
 --outSAMattrRGline ID:"${name}"	PL:"ILLUMINA" CN:"IRCM" 2>> ${logdir}/${logfile}
 " > ${jobdir}/${name}_alignfirst.sh
 
-done
+    sbatch ${jobdir}/${name}_alignfirst.sh
 
-for file in $(ls ${jobdir}); do
-echo "submitting align job for ${name}"
-    sbatch ${jobdir}/${file}
-done
+fi
 
+done
