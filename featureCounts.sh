@@ -13,10 +13,10 @@ mkdir -p ${logdir}
 mkdir -p ${countdir}
 
 
-for file in $(ls ${cleandir}/*_clean.bam | head -n 1 | xargs -n 1 basename) ; do
+for file in $(ls ${cleandir}/*_clean.bam | xargs -n 1 basename) ; do
     name=$(echo ${file} | rev | cut -d "_" -f2- | rev)
 
-    if [[ -f ${countdir}/${name}_countMatrix.txt ]]; then
+    if [[ -f ${countdir}/${name}_counts.txt ]]; then
         echo "${name} already counted"
     else
 
