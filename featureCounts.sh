@@ -33,12 +33,12 @@ echo "#!/bin/bash
 module load scipy-stack
 
 
-featureCounts -p -F GTF \
+featureCounts \
     -T 10 -t "exon" \
-    -g "gene_id" \
+    -p -F GTF \
     -a ${gtf} \
     -o ${countdir}/${name}_counts.txt \
-    ${file}
+    ${cleandir}/${file}
 
 
 " > ${jobdir}/${name}_count.sh
