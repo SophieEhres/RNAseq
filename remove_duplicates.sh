@@ -48,7 +48,7 @@ if [ -f ${markdupdir}/${name}_markdup.bam ]; then
 
 else
 
-java -jar -Xm /cvmfs/soft.computecanada.ca/easybuild/software/2020/Core/picard/2.23.3/picard.jar MarkDuplicates --version >> ${logdir}/${name}_dup.log
+java -jar /cvmfs/soft.computecanada.ca/easybuild/software/2020/Core/picard/2.23.3/picard.jar MarkDuplicates --version >> ${logdir}/${name}_dup.log
 java -Xmx20G -jar /cvmfs/soft.computecanada.ca/easybuild/software/2020/Core/picard/2.23.3/picard.jar MarkDuplicates -I ${file} -M ${metricdir}/${name}_dupmetrics.txt \
 -O ${markdupdir}/${name}_markdup.bam \
 --REMOVE_DUPLICATES false
